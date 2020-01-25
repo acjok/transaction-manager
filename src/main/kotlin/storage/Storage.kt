@@ -22,7 +22,7 @@ class Storage {
     fun findUserById(id: Long) = users.find { it.id == id }
 
     fun createTransaction(transaction: Transaction): Transaction {
-        transaction.id = transactions.size.toLong()
+        transaction.id = transactions.size.toLong() + 1
         if (transactions.add(transaction))
             return transaction
         else
@@ -30,9 +30,9 @@ class Storage {
     }
 
     fun createUser(user: User): User {
-        user.id = users.size.toLong()
+        user.id = users.size.toLong() + 1
         val wallet = Wallet(BigDecimal("0"))
-        wallet.id = wallets.size.toLong()
+        wallet.id = wallets.size.toLong() + 1
         if (wallets.add(wallet)){
             user.wallet = wallet
             if (users.add(user))

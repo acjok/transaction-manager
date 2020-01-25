@@ -60,11 +60,4 @@ class TransactionControllerTest : JerseyTest() {
         response = target("/api/transactions").request().get(List::class.java)
         assertEquals(response.size, 1)
     }
-
-    @Test
-    fun createTransactions() {
-        val transaction = TransactionDto(1, 2, BigDecimal("1"))
-        val response = target("/api/transactions").request().post(Entity.entity(transaction, MediaType.APPLICATION_JSON_TYPE))
-        assertEquals(response.status, 201)
-    }
 }

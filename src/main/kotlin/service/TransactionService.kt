@@ -4,6 +4,7 @@ import dto.TransactionDto
 import exceptions.NotEnoughBalanceException
 import exceptions.TransactionNotAllowedException
 import model.Transaction
+import model.User
 import storage.Storage
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -23,8 +24,19 @@ class TransactionService {
             throw TransactionNotAllowedException("You can't transfer to the same account.")
         val fromUser = userService.findById(transactionDto.fromUser)
         val toUser = userService.findById(transactionDto.toUser)
-        synchronized(fromUser) {
-            synchronized(toUser) {
+
+        val firstLock: User
+        val secondLock: User
+        if (transactionDto.fromUser < transactionDto.toUser) {
+            firstLock = fromUser
+            secondLock = toUser
+        } else {
+            firstLock = toUser
+            secondLock = fromUser
+        }
+
+        synchronized(firstLock) {
+            synchronized(secondLock) {
                 if (fromUser.wallet!!.balance < transactionDto.amount) {
                     throw NotEnoughBalanceException("You don't have enough money for this transaction.")
                 }
@@ -37,7 +49,7 @@ class TransactionService {
     }
 
     fun findAll(userId: Long?): List<Transaction> {
-        userId?: return storage.findAllTransactions()
+        userId ?: return storage.findAllTransactions()
         return findAllForUser(userId)
     }
 
